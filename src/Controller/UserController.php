@@ -77,7 +77,6 @@ final class UserController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'code' => 200,
             'message' => 'Utilisater ' . $id . ' modifié',
         ], 200);
     }
@@ -92,7 +91,6 @@ final class UserController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'code' => 200,
             'message' => 'Utilisateur ' . $email . ' supprimé avec succès',
         ], 200);
     }
