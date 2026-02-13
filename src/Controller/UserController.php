@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -29,9 +30,7 @@ final class UserController extends AbstractController
     ): JsonResponse
     {
         $dataRaw = $request->getContent();
-        if(empty($dataRaw)) {
-            return $this->json(['message' => 'Body vide'], 400);
-        }
+        if(empty($dataRaw)) throw new HttpException(404,'Body vide');
 
         $user = $serializer->deserialize($dataRaw, User::class, 'json');
 
@@ -64,7 +63,7 @@ final class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         if(!isset($data['email']) && !isset($data['role']) && !isset($data['password']) && !isset($data['ville'])) {
-            return $this->json(['message' => 'Aucun champ à modifier'], 400);
+            throw new HttpException(404,'Aucun champ à modifier');
         }
         $currentPw = $user->getPassword();
         $id = $user->getId();

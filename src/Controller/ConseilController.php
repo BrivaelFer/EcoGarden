@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -60,9 +61,8 @@ final class ConseilController extends AbstractController
     ): JsonResponse
     {
         $dataRaw = $request->getContent();
-        if(empty($dataRaw)) {
-            return $this->json(['message' => 'Body vide'], 400);
-        }
+        if(empty($dataRaw))  throw new HttpException(404,'Body vide');
+        
         $idsMois = json_decode($dataRaw, true)['moisList'] ?? [];
         $conseil = $serializer->deserialize($dataRaw, Conseil::class, 'json');
 
@@ -101,9 +101,9 @@ final class ConseilController extends AbstractController
         $idConseil = $conseil->getId();
         $data = json_decode($request->getContent(), true);
         if(!isset($data['title']) && !isset($data['content']) && !isset($data['moisList'])) {
-            return $this->json(['message' => 'Aucun champ à modifier'], 400);
+            throw new HttpException(404,'Aucun champ à modifier');
         }
-        $idsMois = json_decode($request->getContent(), true)['moisList'] ?? false;
+        $idsMois = $data['moisList'] ?? false;
 
         $conseil = $serializer->deserialize($request->getContent(), Conseil::class, 'json', [
             AbstractNormalizer::OBJECT_TO_POPULATE => $conseil
