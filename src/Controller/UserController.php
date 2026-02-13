@@ -28,7 +28,14 @@ final class UserController extends AbstractController
         ValidatorInterface $validator
     ): JsonResponse
     {
-        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        $dataRaw = $request->getContent();
+        if(empty($dataRaw)) {
+            return $this->json(['message' => 'Body vide'], 400);
+        }
+
+        $user = $serializer->deserialize($dataRaw, User::class, 'json');
+
+        if(!$this->isGranted('ROLE_ADMIN')) $user->setRole([]);
 
         $errors = $validator->validate($user);
 
@@ -55,6 +62,10 @@ final class UserController extends AbstractController
         ValidatorInterface $validator
     ): JsonResponse
     {
+        $data = json_decode($request->getContent(), true);
+        if(!isset($data['email']) && !isset($data['role']) && !isset($data['password']) && !isset($data['ville'])) {
+            return $this->json(['message' => 'Aucun champ à modifier'], 400);
+        }
         $currentPw = $user->getPassword();
         $id = $user->getId();
 

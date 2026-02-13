@@ -59,8 +59,12 @@ final class ConseilController extends AbstractController
         ValidatorInterface $validator
     ): JsonResponse
     {
-        $idsMois = json_decode($request->getContent(), true)['moisList'] ?? [];
-        $conseil = $serializer->deserialize($request->getContent(), Conseil::class, 'json');
+        $dataRaw = $request->getContent();
+        if(empty($dataRaw)) {
+            return $this->json(['message' => 'Body vide'], 400);
+        }
+        $idsMois = json_decode($dataRaw, true)['moisList'] ?? [];
+        $conseil = $serializer->deserialize($dataRaw, Conseil::class, 'json');
 
         $conseil->setMoisList(new ArrayCollection());
         foreach ($idsMois as $id) {
@@ -95,19 +99,25 @@ final class ConseilController extends AbstractController
     ): JsonResponse
     {
         $idConseil = $conseil->getId();
-        $idsMois = json_decode($request->getContent(), true)['moisList'] ?? [];
+        $data = json_decode($request->getContent(), true);
+        if(!isset($data['title']) && !isset($data['content']) && !isset($data['moisList'])) {
+            return $this->json(['message' => 'Aucun champ à modifier'], 400);
+        }
+        $idsMois = json_decode($request->getContent(), true)['moisList'] ?? false;
 
         $conseil = $serializer->deserialize($request->getContent(), Conseil::class, 'json', [
             AbstractNormalizer::OBJECT_TO_POPULATE => $conseil
         ]);
-
-        $conseil->setMoisList(new ArrayCollection());
-        foreach ($idsMois as $id) {
-            $mois = $em->getRepository(Mois::class)->find($id);
-            if ($mois) {
-                $conseil->addMoisList($mois);
-                $mois->addConseil($conseil);
-                $em->persist($mois);
+        
+        if($idsMois !== false) {
+            $conseil->setMoisList(new ArrayCollection());
+            foreach ($idsMois as $id) {
+                $mois = $em->getRepository(Mois::class)->find($id);
+                if ($mois) {
+                    $conseil->addMoisList($mois);
+                    $mois->addConseil($conseil);
+                    $em->persist($mois);
+                }
             }
         }
 
