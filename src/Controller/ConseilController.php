@@ -61,7 +61,7 @@ final class ConseilController extends AbstractController
     ): JsonResponse
     {
         $dataRaw = $request->getContent();
-        if(empty($dataRaw))  throw new HttpException(404,'Body vide');
+        if(empty($dataRaw))  throw new HttpException(400,'Body vide');
         
         $idsMois = json_decode($dataRaw, true)['moisList'] ?? [];
         $conseil = $serializer->deserialize($dataRaw, Conseil::class, 'json');
@@ -101,7 +101,7 @@ final class ConseilController extends AbstractController
         $idConseil = $conseil->getId();
         $data = json_decode($request->getContent(), true);
         if(!isset($data['title']) && !isset($data['content']) && !isset($data['moisList'])) {
-            throw new HttpException(404,'Aucun champ à modifier');
+            throw new HttpException(400,'Aucun champ à modifier');
         }
         $idsMois = $data['moisList'] ?? false;
 

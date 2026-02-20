@@ -30,7 +30,7 @@ final class UserController extends AbstractController
     ): JsonResponse
     {
         $dataRaw = $request->getContent();
-        if(empty($dataRaw)) throw new HttpException(404,'Body vide');
+        if(empty($dataRaw)) throw new HttpException(400,'Body vide');
 
         $user = $serializer->deserialize($dataRaw, User::class, 'json');
 
@@ -63,7 +63,7 @@ final class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         if(!isset($data['email']) && !isset($data['role']) && !isset($data['password']) && !isset($data['ville'])) {
-            throw new HttpException(404,'Aucun champ à modifier');
+            throw new HttpException(400,'Aucun champ à modifier');
         }
         $currentPw = $user->getPassword();
         $id = $user->getId();
