@@ -85,7 +85,10 @@ final class ConseilController extends AbstractController
         $em->persist($conseil);
         $em->flush();
 
-        return $this->json(['message' => 'conseil enregistré'], 200);
+        return $this->json([
+            'message' => 'conseil enregistré', 
+            'id'=> $conseil->getId()
+        ], 200);
     }
 
     #[IsGranted('ROLE_ADMIN')]
