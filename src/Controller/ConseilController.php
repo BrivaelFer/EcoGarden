@@ -115,8 +115,6 @@ final class ConseilController extends AbstractController
                 $mois = $em->getRepository(Mois::class)->find($id);
                 if ($mois) {
                     $conseil->addMoisList($mois);
-                    $mois->addConseil($conseil);
-                    $em->persist($mois);
                 }
             }
         }
