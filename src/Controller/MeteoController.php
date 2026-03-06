@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -33,10 +34,7 @@ final class MeteoController extends AbstractController
         $data = $this->getData($tagAwareCacheInterface, $httpClient, $ville);
 
         if($data['code'] == 404) {
-            $data['content'] = [
-                'erreur' => 404,
-                'message' => 'Aucune données trouver pour la ville de l\'utilisateur'
-            ];
+            throw new HttpException(400,'Aucune données trouver pour la ville de l\'utilisateur');
         }
 
         return $this->json($data['content'], $data['code']);
@@ -48,10 +46,7 @@ final class MeteoController extends AbstractController
         $data = $this->getData($tagAwareCacheInterface, $httpClient, $ville);
 
         if($data['code'] == 404) {
-            $data['content'] = [
-                'erreur' => 404,
-                'message' => 'Aucune données trouver pour la ville : ' . $ville
-            ];
+            throw new HttpException(400,'Aucune données trouver pour la ville : ' . $ville);
         }
 
         return $this->json($data['content'], $data['code']);
