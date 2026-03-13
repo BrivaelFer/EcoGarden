@@ -27,8 +27,8 @@ final class ConseilController extends AbstractController
     {
         $id = date('n');
 
-        $mouth = $moisRepository->find($id);
-        $conseils = $mouth->getConseils();
+        $mois = $moisRepository->find($id);
+        $conseils = $mois->getConseils();
         $conseils = $serializer->serialize($conseils, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object->getId();
@@ -38,10 +38,10 @@ final class ConseilController extends AbstractController
         return JsonResponse::fromJsonString($conseils);
     }
 
-    #[Route('/conseil/{id}', name: 'api_conseil_mouth', methods:'GET')]
-    public function getConseilByMouth(Mois $mouth, SerializerInterface $serializer): JsonResponse
+    #[Route('/conseil/{id}', name: 'api_conseil_mois', methods:'GET')]
+    public function getConseilByMois(Mois $mois, SerializerInterface $serializer): JsonResponse
     {
-        $conseils = ($mouth->getConseils());
+        $conseils = ($mois->getConseils());
         $conseils = $serializer->serialize($conseils, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object->getId();
@@ -88,7 +88,7 @@ final class ConseilController extends AbstractController
         return $this->json([
             'message' => 'conseil enregistré', 
             'id'=> $conseil->getId()
-        ], 200);
+        ], JsonResponse::HTTP_CREATED);
     }
 
     #[IsGranted('ROLE_ADMIN')]
@@ -138,7 +138,7 @@ final class ConseilController extends AbstractController
 
          return $this->json([
             'message' => 'Conseil ' . $idConseil . ' modifié',
-        ], 200);
+        ], JsonResponse::HTTP_ACCEPTED);
     }
 
     #[IsGranted('ROLE_ADMIN')]
@@ -152,6 +152,6 @@ final class ConseilController extends AbstractController
 
         return $this->json([
             'message' => 'Conseil ' . $title . ' supprimé avec succès',
-        ], 200);
+        ], JsonResponse::HTTP_ACCEPTED);
     }
 }

@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
@@ -47,7 +48,7 @@ final class UserController extends AbstractController
         $em->persist($user);
         $em->flush();
 
-        return $this->json(['message' => 'user enregistré'], 200);
+        return $this->json(['message' => 'user enregistré'], JsonResponse::HTTP_CREATED);
     }
 
     #[IsGranted('ROLE_ADMIN')]
@@ -88,7 +89,7 @@ final class UserController extends AbstractController
 
         return $this->json([
             'message' => 'Utilisater ' . $id . ' modifié',
-        ], 200);
+        ], JsonResponse::HTTP_OK);
     }
 
     #[IsGranted('ROLE_ADMIN')]
@@ -102,6 +103,6 @@ final class UserController extends AbstractController
 
         return $this->json([
             'message' => 'Utilisateur ' . $email . ' supprimé avec succès',
-        ], 200);
+        ], JsonResponse::HTTP_OK);
     }
 }
