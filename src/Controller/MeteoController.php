@@ -34,7 +34,7 @@ final class MeteoController extends AbstractController
         $data = $this->getData($tagAwareCacheInterface, $httpClient, $ville);
 
         if($data['code'] == 404) {
-            throw new HttpException(400,'Aucune données trouver pour la ville de l\'utilisateur');
+            throw new HttpException(404,'Aucune données trouver pour la ville de l\'utilisateur');
         }
 
         return $this->json($data['content'], $data['code']);
@@ -46,7 +46,7 @@ final class MeteoController extends AbstractController
         $data = $this->getData($tagAwareCacheInterface, $httpClient, $ville);
 
         if($data['code'] == 404) {
-            throw new HttpException(400,'Aucune données trouver pour la ville : ' . $ville);
+            throw new HttpException(404,'Aucune données trouver pour la ville : ' . $ville);
         }
 
         return $this->json($data['content'], $data['code']);
